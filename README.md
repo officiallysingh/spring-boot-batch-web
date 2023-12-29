@@ -97,7 +97,7 @@ Defines a Partitioned Job with a single step as follows.
 For details, refer to [`StatementJobConfiguration`](src/main/java/com/ksoot/batch/job/StatementJobConfiguration.java).
 Reader and Writer are self-explanatory. Processor should contain all business logic and Multiple processors can be chained together using 
 [`CompositeItemProcessor`](https://docs.spring.io/spring-batch/docs/current/api/org/springframework/batch/item/support/CompositeItemProcessor.html).
-[`BeanValidatingItemProcessor`](https://docs.spring.io/spring-batch/docs/current/api/org/springframework/batch/item/validation/BeanValidatingItemProcessor.html) is used to validate the input data.
+[`BeanValidatingItemProcessor`](https://docs.spring.io/spring-batch/docs/current/api/org/springframework/batch/item/validator/BeanValidatingItemProcessor.html) is used to validate the input data.
 ```java
 @Configuration
 @AutoConfigureAfter(value = {BatchConfiguration.class})
@@ -213,6 +213,10 @@ class StatementJobConfiguration extends JobConfigurationSupport<DailyTransaction
   }
 }
 ```
+
+> [!IMPORTANT]
+Any component needing access to `stepExecutionContext` must be defined as `@StepScope` bean
+and to access `jobParameters` or `jobExecutionContext` must be defined as `@JobScope` bean
 
 ### Job Partitioning
 If specific `cardNumbers` are passed as job parameters, then the job is partitioned on these account numbers only. 
