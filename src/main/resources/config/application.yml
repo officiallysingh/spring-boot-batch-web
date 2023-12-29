@@ -1,0 +1,169 @@
+# ===================================================================
+# Spring Boot configuration.
+#
+# This configuration will be overridden by the Spring profile you use,
+# for example application-dev.yml if you use the "dev" profile.
+#
+# Full reference for Standard Spring Boot properties is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+# set -Dspring.profiles.active=<dev|sit|int> as JVM argument to run in desired profile
+# If no profile is specified explicitly, application will fall back to default profile, which is "local"
+
+spring:
+  application:
+    name: spring-boot-batch-web
+  devtools:
+    add-properties: false
+    restart:
+      enabled: false
+      exclude: logs/*,application.log,*.log,*.log.*
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration
+    #------------------------- Database configuration -------------------------
+    datasource:
+      url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/scdf}
+      username: ${POSTGRES_USERNAME:postgres}
+      password: ${POSTGRES_PASSWORD:admin}
+      hikari:
+        pool-name: pg-connection-pool
+        maximum-pool-size: 128
+        minimum-idle: 16
+    jpa:
+      hibernate:
+        ddl-auto: validate
+      database: POSTGRESQL
+      open-in-view: false
+      show-sql: false
+      properties:
+        '[hibernate.show_sql]': false
+        '[hibernate.format_sql]': true
+        '[hibernate.use_sql_comments]': true
+        '[hibernate.jdbc.time_zone]': UTC
+        '[integration.envers.enabled]': true
+        '[hibernate.enable_lazy_load_no_trans]': true
+    flyway:
+      enabled: true
+      baseline-on-migrate: true
+      out-of-order: false
+      locations:
+        - db/migration
+  #------------------------- MongoDB configuration -------------------------
+  data:
+    mongodb:
+      uri: ${MONGODB_URL:mongodb://localhost:27017}
+      database: ${MONGODB_DATABASE:statement_db}
+      auto-index-creation: false
+      uuid-representation: standard
+      account:
+        uri: ${spring.data.mongodb.uri}
+        database: account_db
+      transaction:
+        uri: ${spring.data.mongodb.uri}
+        database: transaction_db
+  docker:
+    compose:
+      enabled: false
+  messages:
+    basename: i18n/messages,i18n/errors,i18n/problems
+    cache-duration: PT10S # 10 second, see the ISO 8601 standard
+    fallback-to-system-locale: true
+    always-use-message-format: false
+    use-code-as-default-message: false
+  main:
+    log-startup-info: true
+  task:
+    execution:
+      thread-name-prefix: spring-task-executor-
+      pool:
+        core-size: 8
+        max-size: 32
+        queue-capacity: 10000
+        keep-alive: "10s"
+  jackson:
+    format:
+      date-time: iso
+    time-zone: IST
+    serialization:
+      write-dates-with-zone-id: true
+      write-dates-as-timestamps: false
+    #hateoas:
+    #use-hal-as-default-json-media-type: false
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+    problemdetails:
+      enabled: false
+  threads:
+    virtual:
+      enabled: true
+
+#------------------------- Swagger configuration -------------------------
+springdoc:
+  show-actuator: true
+  group-configs:
+    - group: actuator
+      display-name: Actuator
+      paths-to-match: /actuator/**
+    - group: statement
+      display-name: Statement
+      paths-to-match: /**/statements/**
+  swagger-ui:
+    syntaxHighlight:
+      activated: true
+
+#------------------------- Actuators configuration -------------------------
+# If not specified '/actuator' is taken as default. If specified must start with '/'
+#management.endpoints.web.base-path=/
+# Set it as "*", if you want to expose all actuator endpoints
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+problem:
+  type-url: http://localhost:8080/problems/help.html
+  debug-enabled: false
+  stacktrace-enabled: false
+  cause-chains-enabled: false
+
+server:
+  port: 8080
+  forward-headers-strategy: framework
+#    servlet:
+#        context-path: /api
+logging:
+  level:
+    ROOT: info
+    '[org.mongodb.driver]': warn
+#    '[org.springframework.data.mongodb.core.MongoTemplate]': debug
+#    '[org.springframework.batch]': debug
+debug: false
+
+# ===================================================================
+# Application specific properties
+# Add your own application properties here
+# ===================================================================
+batch:
+  chunk-size: 100
+  skip-limit: 10
+  max-retries: 3
+  backoff-initial-delay: PT3S
+  backoff-multiplier: 2
+  page-size: 300
+  partition-size: 16
+  trigger-partitioning-threshold: 100
+  task-executor: applicationTaskExecutor
