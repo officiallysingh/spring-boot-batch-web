@@ -35,7 +35,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
 
     implementation 'io.github.officiallysingh:spring-batch-commons:0.0.2-SNAPSHOT'
-    implementation 'io.github.officiallysingh:spring-boot-problem-handler:1.6'
+    implementation 'io.github.officiallysingh:spring-boot-problem-handler:1.7'
 
     implementation 'org.apache.commons:commons-lang3'
     implementation 'org.apache.commons:commons-collections4:4.4'

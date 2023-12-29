@@ -22,7 +22,7 @@
         <datafaker.version>2.0.2</datafaker.version>
 
         <spring-batch-commons.version>0.0.2-SNAPSHOT</spring-batch-commons.version>
-        <spring-boot-problem-handler.version>1.6</spring-boot-problem-handler.version>
+        <spring-boot-problem-handler.version>1.7</spring-boot-problem-handler.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
