@@ -79,7 +79,7 @@ curl -X 'PUT' \
 * Get Statements
 ```curl
 curl -X 'GET' \
-  'http://localhost:8080/v1/statements?cardNumbers=&page=0&size=16' \
+  'http://localhost:8080/v1/statements' \
   -H 'accept: */*'
 ```
   
