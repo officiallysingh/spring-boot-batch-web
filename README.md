@@ -70,13 +70,13 @@ Refer to [`StatementApi`](https://github.com/officiallysingh/spring-boot-batch-w
 ### APIs
 * Access [`Swagger`](http://localhost:8080/swagger-ui.html) at http://localhost:8080/swagger-ui.html
 * Access Statement APIs at http://localhost:8080/swagger-ui/index.html?urls.primaryName=Statement
-  * Execute Statement Job
+* Execute Statement Job
 ```curl
 curl -X 'PUT' \
   'http://localhost:8080/v1/statements/job' \
   -H 'accept: */*'
 ```  
-  * Get Statements
+* Get Statements
 ```curl
 curl -X 'GET' \
   'http://localhost:8080/v1/statements?cardNumbers=&page=0&size=16' \
