@@ -68,6 +68,22 @@ Refer to [`StatementApi`](https://github.com/officiallysingh/spring-boot-batch-w
   If not specified `false` is taken as default, in this case if its last execution with same parameters was successful then Job would not execute again.
   Example: `forceRestart=true`
 
+### APIs
+* Access [`Swagger`](http://localhost:8080/swagger-ui.html) at http://localhost:8080/swagger-ui.html
+* Access Statement APIs at http://localhost:8080/swagger-ui/index.html?urls.primaryName=Statement
+  * Execute Statement Job
+```curl
+curl -X 'PUT' \
+  'http://localhost:8080/v1/statements/job' \
+  -H 'accept: */*'
+```  
+  * Get Statements
+```curl
+curl -X 'GET' \
+  'http://localhost:8080/v1/statements?cardNumbers=&page=0&size=16' \
+  -H 'accept: */*'
+```
+  
 ## Implementation
 The application uses [**`spring-batch-commons`**](https://github.com/officiallysingh/spring-batch-commons) to avail common Spring Batch components, out of box.
 Maven
