@@ -1,22 +1,18 @@
 # Spring Batch Job implementation as Spring Cloud Task
 
-[**Spring Batch**](https://docs.spring.io/spring-batch/reference/index.html) is a battle tested Java framework that makes it easy to write batch applications. 
-Batch applications involve reliably and efficiently processing large volumes of data to and
-from various data sources (files, databases, messaging middleware, and so on). 
-Spring Batch is great at doing this and provides the necessary foundation to meet the stringent requirements of batch applications.
-It provides mechanisms for common tasks such as **task orchestration**, **partitioning**, and **restart**.
-
 [**Spring Cloud Task**](https://docs.spring.io/spring-cloud-task/docs/current/reference/html/) is a framework for creating and orchestrating short-lived microservices.
 So It's a good fit for Spring Batch Jobs as the JVM persists until the job is completed and subsequently exits, freeing up resources.
 
+![String Batch Architecture](https://github.com/officiallysingh/spring-boot-batch-cloud-task/blob/main/Spring_Batch_Cloud_Task.jpg)
+
 ## Introduction
 This project is a simple example of how to implement a Spring Batch Job as a Spring Cloud Task.
-It implements a hypothetical use case to generate Credit card statements 
+It implements a hypothetical use case to generate Credit card statements
 containing aggregate daily transaction amounts date-wise for a particular month.
 * Reads Credit card accounts from a MongoDB collection `accounts` in database `account_db` and partition on these account numbers for high performance.
 * Reads transactions from MongoDB collection `transactions` in database `transaction_db` using pagination. Aggregates transaction amounts per day.
 * Processes the date-wise transaction amount and writes the output to MongoDB collection `statements` in database `statement_db`.
-* It is fault-tolerant i.e. try to recover from transient failures and skip bad records. 
+* It is fault-tolerant i.e. try to recover from transient failures and skip bad records.
 * It supports restartability from last failure point.
 
 ## Installation
@@ -49,7 +45,7 @@ Make sure **flyway** is enabled as Spring Batch and Spring Cloud Task needs thei
 Used internally by the framework to persist and retrieve metadata about the jobs and tasks.
 
 ### Sample Data
-On first run, it creates schema and populates sample data for past three months into MongoDB collections. 
+On first run, it creates schema and populates sample data for past three months into MongoDB collections.
 For details refer to [`DataPopulator`](src/main/java/com/ksoot/batch/DataPopulator.java).
 Depending on dataset size to be created the application may take a while to start, the first time. In subsequent runs, it will start quickly.
 You can change the number of accounts to be created as follows
@@ -62,20 +58,15 @@ private static final int BATCH_SIZE = 1000;
 ```
 
 ### Job Parameters
-Job may take following optional parameters, defaults are taken if not specified. Refer to [`StatementJobApplication`](src/main/java/com/ksoot/batch/StatementJobApplication.java) for more details.
+Job may take following optional parameters, defaults are taken if not specified.
+Refer to [`StatementApi`](https://github.com/officiallysingh/spring-boot-batch-web/blob/3782f776fe9ff688f30cb16688ce0ac2b23cfda7/src/main/java/com/ksoot/batch/controller/StatementApi.java#L65C11-L65C11) for more details.
 * `cardNumbers` - Comma separated list of Credit card numbers to process. If not specified, all accounts are processed.
-Example: `cardNumbers=5038-1972-4899-4180,5752-0862-5835-3760`
-* `month` - Month for which statement is to be generated. If not specified, last month is taken.
-Example: `month=2023-11`
-* `forceRestart` - If set to true, job is restarted even if its last execution with same parameters was successful. 
-If not specified `false` is taken as default, in this case if its last execution with same parameters was successful then Job would not execute again.
-Example: `forceRestart=true`
-
-> [!IMPORTANT]
-You can pass these parameters as program arguments from your IDE as follows.
-```shell
---cardNumbers=5038-1972-4899-4180,5752-0862-5835-3760 --month=2023-11 --forceRestart=true
-```
+  Example: `cardNumbers=5038-1972-4899-4180,5752-0862-5835-3760`
+* `month` - Month (IST) in ISO format yyyy-MM, for which statement is to be generated. If not specified, last month is taken.
+  Example: `month=2023-11`
+* `forceRestart` - If set to true, job is restarted even if its last execution with same parameters was successful.
+  If not specified `false` is taken as default, in this case if its last execution with same parameters was successful then Job would not execute again.
+  Example: `forceRestart=true`
 
 ## Implementation
 The application uses [**`spring-batch-commons`**](https://github.com/officiallysingh/spring-batch-commons) to avail common Spring Batch components, out of box.
@@ -93,9 +84,9 @@ implementation 'io.github.officiallysingh:spring-batch-commons:1.0'
 ```
 
 ### Job Configuration
-Defines a Partitioned Job with a single step as follows. 
+Defines a Partitioned Job with a single step as follows.
 For details, refer to [`StatementJobConfiguration`](src/main/java/com/ksoot/batch/job/StatementJobConfiguration.java).
-Reader and Writer are self-explanatory. Processor should contain all business logic and Multiple processors can be chained together using 
+Reader and Writer are self-explanatory. Processor should contain all business logic and Multiple processors can be chained together using
 [`CompositeItemProcessor`](https://docs.spring.io/spring-batch/docs/current/api/org/springframework/batch/item/support/CompositeItemProcessor.html).
 [`BeanValidatingItemProcessor`](https://docs.spring.io/spring-batch/docs/current/api/org/springframework/batch/item/validator/BeanValidatingItemProcessor.html) is used to validate the input data.
 ```java
@@ -219,7 +210,7 @@ Any component needing access to `stepExecutionContext` must be defined as `@Step
 and to access `jobParameters` or `jobExecutionContext` must be defined as `@JobScope` bean
 
 ### Job Partitioning
-If specific `cardNumbers` are passed as job parameters, then the job is partitioned on these account numbers only. 
+If specific `cardNumbers` are passed as job parameters, then the job is partitioned on these account numbers only.
 Otherwise, all accounts are processed in parallel by partitioning on account numbers.
 For details refer to [`AccountsPartitioner`](src/main/java/com/ksoot/batch/job/AccountsPartitioner.java).
 ```java
@@ -254,6 +245,24 @@ public class AccountsPartitioner extends AbstractPartitioner {
         .into(new ArrayList<>());
   }
 }
+```
+
+### Data Sources configurations
+Different databases can be configured for `statement_db`, `account_db` and `transaction_db` or all can be set to same database URI as follows.
+**Converters** and **Codecs** are registered to support `OffsetDateTime` and `ZonedDateTime` types in `MongoTemplate`.
+Refer to [`MongoDBConfig`](src/main/java/com/ksoot/batch/config/MongoDBConfig.java) for details.
+```yaml
+spring:
+  data:
+    mongodb:
+      uri: <Statement DB URI>
+      database: statement_db
+      account:
+        uri: <Account DB URI>
+        database: account_db
+      transaction:
+        uri: <Transaction DB URI>
+        database: transaction_db
 ```
 
 ## Author
