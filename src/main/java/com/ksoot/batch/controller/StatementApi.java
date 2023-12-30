@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.YearMonth;
 import java.util.List;
 
+import jakarta.validation.constraints.Past;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -70,6 +71,7 @@ public interface StatementApi extends Api {
               value = "month",
               required = false/*,
               defaultValue = "#{T(com.ksoot.batch.utils.DateTimeUtils).previousMonthIST()}"*/)
+          @Past
           final YearMonth month,
       @Parameter(
               description =
