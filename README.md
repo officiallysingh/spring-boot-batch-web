@@ -292,7 +292,7 @@ batch:
   page-size: 300
   partition-size: 16
   trigger-partitioning-threshold: 100
-#  task-executor: applicationTaskExecutor
+  task-executor: applicationTaskExecutor
 #  run-id-sequence: run_id_sequence
 ```
 
@@ -312,7 +312,7 @@ batch:
 * **`batch.run-id-sequence`** : Run Id database sequence name, Default: `run_id_sequence`.
 
 > [!IMPORTANT]
-It is recommended to set `batch.task-executor` as `applicationTaskExecutor`.
+It is recommended to set `batch.task-executor` as `applicationTaskExecutor` to submit jobs asynchronously.
 
 ## Author
 [**Rajveer Singh**](https://www.linkedin.com/in/rajveer-singh-589b3950/), In case you find any issues or need any support, please email me at raj14.1984@gmail.com
