@@ -1,12 +1,11 @@
-# Spring Batch Job implementation as Spring Cloud Task
+# Spring Batch Job implementation as Spring Rest service
 
-[**Spring Cloud Task**](https://docs.spring.io/spring-cloud-task/docs/current/reference/html/) is a framework for creating and orchestrating short-lived microservices.
-So It's a good fit for Spring Batch Jobs as the JVM persists until the job is completed and subsequently exits, freeing up resources.
+Executing a Spring Batch Job from a REST API is a common use case. 
 
 ![String Batch Architecture](https://github.com/officiallysingh/spring-boot-batch-cloud-task/blob/main/Spring_Batch_Cloud_Task.jpg)
 
 ## Introduction
-This project is a simple example of how to implement a Spring Batch Job as a Spring Cloud Task.
+This project demonstrates how to implement a Spring Batch Job as a Spring Rest service.
 It implements a hypothetical use case to generate Credit card statements
 containing aggregate daily transaction amounts date-wise for a particular month.
 * Reads Credit card accounts from a MongoDB collection `accounts` in database `account_db` and partition on these account numbers for high performance.
