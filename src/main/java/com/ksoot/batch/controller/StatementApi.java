@@ -94,7 +94,7 @@ public interface StatementApi extends Api {
 
   @Operation(
       operationId = "get-statements",
-      summary = "Gets the Statements for given Loan account number in given date range",
+      summary = "Gets the Statements for given Credit Card numbers and Month",
       tags = {"Statement"})
   @ApiResponses(
       value = {
@@ -110,13 +110,13 @@ public interface StatementApi extends Api {
       })
   @GetMapping
   PaginatedResource<Statement> getStatements(
-      @Parameter(description = "Year Month in ISO format yyyy-MM.", example = "2023-11")
+      @Parameter(description = "Year Month in ISO format yyyy-MM. Only past months allowed.", example = "2023-11")
           @RequestParam(required = false)
           @Past
           final YearMonth month,
       @Parameter(
               description =
-                  "List of Credit Card numbers, if Statement job is to be executed only for specific accounts.")
+                  "List of Credit Card numbers")
           @RequestParam(required = false)
           final List<String> cardNumbers,
       @ParameterObject @PageableDefault(size = DEFAULT_PAGE_SIZE) final Pageable pageRequest);
