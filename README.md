@@ -312,7 +312,8 @@ batch:
 * **`batch.run-id-sequence`** : Run Id database sequence name, Default: `run_id_sequence`.
 
 > [!IMPORTANT]
-It is recommended to set `batch.task-executor` as `applicationTaskExecutor` to submit jobs asynchronously.
+It is required to set `batch.task-executor` as some implementation of  `AyncTaskExecutor` to submit jobs asynchronously.
+To take benefit from Java 21 Virtual threads with Spring boot 3.2 define a [**`VirtualThreadTaskExecutor`**](https://spring.io/blog/2023/11/23/spring-batch-5-1-ga-5-0-4-and-4-3-10-available-now/#virtual-threads-support) and configure the name as `batch.task-executor`.
 
 ## Author
 [**Rajveer Singh**](https://www.linkedin.com/in/rajveer-singh-589b3950/), In case you find any issues or need any support, please email me at raj14.1984@gmail.com
